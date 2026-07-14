@@ -162,7 +162,7 @@ class VoiceIntakeHandler(BaseHTTPRequestHandler):
 
 def run(host: str = "127.0.0.1", port: int = 8080) -> None:
     server = HTTPServer((host, port), VoiceIntakeHandler)
-    print(f"Reliable-Voice intake service running at http://{host}:{port}")
+    print(f"Reliable-Voice- intake service running at http://{host}:{port}")
     server.serve_forever()
 
 
