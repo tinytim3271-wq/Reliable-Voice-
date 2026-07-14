@@ -23,7 +23,7 @@ curl -X POST http://127.0.0.1:8080/intake-call \
     "customer_name": "Alex Carter",
     "phone": "555-111-2222",
     "vehicle": "2018 Ford F-150",
-    "call_transcript": "My truck won't start and I just hear clicking."
+    "call_transcript": "My truck wont start and I just hear clicking."
   }'
 ```
 
