@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
-from http.server import BaseHTTPRequestHandler, HTTPServer
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from typing import Any
 from uuid import uuid4
 
@@ -147,21 +147,34 @@ class VoiceIntakeHandler(BaseHTTPRequestHandler):
             self._respond(404, {"error": "Not Found"})
             return
 
+        MAX_PAYLOAD = 65_536  # 64 KB
         try:
             raw_length = self.headers.get("Content-Length", "0")
-            length = int(raw_length)
+            try:
+                length = int(raw_length)
+            except ValueError:
+                self._respond(400, {"error": "Invalid Content-Length"})
+                return
+            if length < 0 or length > MAX_PAYLOAD:
+                self._respond(400, {"error": "Payload size exceeds limit"})
+                return
             raw_payload = self.rfile.read(length)
-            payload = json.loads(raw_payload or b"{}")
+            try:
+                payload = json.loads(raw_payload or b"{}")
+            except json.JSONDecodeError:
+                self._respond(400, {"error": "Invalid JSON payload"})
+                return
+            if not isinstance(payload, dict):
+                self._respond(400, {"error": "Request body must be a JSON object"})
+                return
             work_order = build_work_order(payload)
             self._respond(200, work_order)
         except ValueError as exc:
             self._respond(400, {"error": str(exc)})
-        except json.JSONDecodeError:
-            self._respond(400, {"error": "Invalid JSON payload"})
 
 
 def run(host: str = "127.0.0.1", port: int = 8080) -> None:
-    server = HTTPServer((host, port), VoiceIntakeHandler)
+    server = ThreadingHTTPServer((host, port), VoiceIntakeHandler)
     print(f"Reliable-Voice- intake service running at http://{host}:{port}")
     server.serve_forever()
 
