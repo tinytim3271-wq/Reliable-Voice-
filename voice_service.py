@@ -141,7 +141,8 @@ class VoiceIntakeHandler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(response)
 
-    def do_POST(self) -> None:  # noqa: N802
+    def do_POST(self) -> None:
+        # BaseHTTPRequestHandler requires this exact method name.
         if self.path != "/intake-call":
             self._respond(404, {"error": "Not Found"})
             return
@@ -149,7 +150,8 @@ class VoiceIntakeHandler(BaseHTTPRequestHandler):
         try:
             raw_length = self.headers.get("Content-Length", "0")
             length = int(raw_length)
-            payload = json.loads(self.rfile.read(length) if length > 0 else b"{}")
+            raw_payload = self.rfile.read(length)
+            payload = json.loads(raw_payload or b"{}")
             work_order = build_work_order(payload)
             self._respond(200, work_order)
         except ValueError as exc:
