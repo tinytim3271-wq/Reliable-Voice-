@@ -112,7 +112,7 @@ def build_work_order(payload: dict[str, Any], labor_rate: float = 120.0) -> dict
     )
 
     return {
-        "work_order_id": f"WO-{uuid4().hex[:10].upper()}",
+        "work_order_id": f"WO-{uuid4().hex.upper()}",
         "created_at": datetime.now(timezone.utc).isoformat(),
         "customer": {
             "name": customer_name,
@@ -160,7 +160,7 @@ class VoiceIntakeHandler(BaseHTTPRequestHandler):
 
 def run(host: str = "127.0.0.1", port: int = 8080) -> None:
     server = HTTPServer((host, port), VoiceIntakeHandler)
-    print(f"Reliable Voice intake service running at http://{host}:{port}")
+    print(f"Reliable-Voice intake service running at http://{host}:{port}")
     server.serve_forever()
 
 

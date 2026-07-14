@@ -9,7 +9,7 @@ This project includes a minimal Python HTTP service that accepts a call transcri
 
 ## Run locally
 ```bash
-python /home/runner/work/Reliable-Voice-/Reliable-Voice-/voice_service.py
+python voice_service.py
 ```
 
 Service endpoint:
